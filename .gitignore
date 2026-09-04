@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ML artifacts (large binary, regenerate via ml/train_*.py)
+backend/models/*.h5
+backend/models/*.keras
+backend/models/*.joblib
+backend/models/*.pkl
+backend/models/class_indices.json
+ml/data/*
+!ml/data/.gitkeep
+
+# Flutter
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/.pub-cache/
+mobile/.pub/
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/android/.gradle/
+mobile/**/local.properties
+mobile/**/*.iml
+
+# Secrets / env
+.env
+*.env
+mobile/lib/config/secrets.dart
+supabase/.env
+
+# OS
+.DS_Store
+Thumbs.db
