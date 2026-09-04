@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class GemPrediction(BaseModel):
@@ -7,6 +7,8 @@ class GemPrediction(BaseModel):
 
 
 class PredictResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     top_prediction: GemPrediction
     top_k: list[GemPrediction]
     model_loaded: bool
@@ -21,6 +23,8 @@ class PriceRequest(BaseModel):
 
 
 class PriceResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     estimated_price: float
     price_range_low: float
     price_range_high: float

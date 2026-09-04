@@ -9,8 +9,14 @@ layout Kaggle ships it in:
     ml/data/gemstones-images/test/<class_name>/*.jpg
 If your download has a different top-level folder name, adjust DATA_DIR below.
 
+Two-phase transfer learning: Phase 1 trains only the classification head with
+the EfficientNetB0 backbone frozen (fast); Phase 2 unfreezes the backbone and
+fine-tunes the whole network at a low learning rate (slow, but needed to
+reach the 80% target -- the frozen head alone tops out around 55-65%).
+
 Usage:
-    python ml/train_cnn.py [--epochs 20] [--batch-size 32] [--freeze-base]
+    python ml/train_cnn.py [--epochs 20] [--fine-tune-epochs 15] [--batch-size 32]
+    python ml/train_cnn.py --freeze-base   # skip fine-tuning; quick CPU smoke test only
 
 Output:
     backend/models/gemstone_cnn.keras
@@ -33,7 +39,7 @@ REPORTS_DIR = ML_DIR / "reports"
 IMAGE_SIZE = 224
 
 
-def build_model(num_classes: int, freeze_base: bool):
+def build_model(num_classes: int):
     import tensorflow as tf
     from tensorflow.keras import layers, models
     from tensorflow.keras.applications import EfficientNetB0
@@ -44,14 +50,19 @@ def build_model(num_classes: int, freeze_base: bool):
         input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3),
         pooling="avg",
     )
-    base_model.trainable = not freeze_base
+    base_model.trainable = False
 
     inputs = tf.keras.Input(shape=(IMAGE_SIZE, IMAGE_SIZE, 3))
     x = layers.RandomFlip("horizontal")(inputs)
     x = layers.RandomRotation(0.15)(x)
     x = layers.RandomZoom(0.15)(x)
     x = layers.RandomBrightness(0.15)(x)
-    x = base_model(x, training=not freeze_base)
+    # training=False here is intentional and permanent (it's baked into the
+    # graph, independent of base_model.trainable at fit time): it keeps
+    # BatchNorm layers in inference mode through both the frozen head-only
+    # phase AND the later fine-tuning phase, which is the standard Keras
+    # recipe for fine-tuning without destroying pretrained BN statistics.
+    x = base_model(x, training=False)
     x = layers.Dropout(0.3)(x)
     outputs = layers.Dense(num_classes, activation="softmax")(x)
 
@@ -61,17 +72,36 @@ def build_model(num_classes: int, freeze_base: bool):
         loss="categorical_crossentropy",
         metrics=["accuracy"],
     )
-    return model
+    return model, base_model
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument("--epochs", type=int, default=20, help="Frozen-head training phase.")
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument(
         "--freeze-base",
         action="store_true",
-        help="Freeze the EfficientNetB0 backbone (faster, use for a quick CPU run).",
+        help="Skip fine-tuning entirely: frozen-backbone head-only training "
+        "(fast, use for a quick CPU smoke-test run, but won't reach the "
+        "proposal's 80%% accuracy target on its own).",
+    )
+    parser.add_argument(
+        "--fine-tune-epochs",
+        type=int,
+        default=15,
+        help="After the frozen phase, unfreeze the backbone and continue training "
+        "at --fine-tune-lr for this many epochs. Set 0 to skip. This is the slow "
+        "part on CPU -- move to a GPU (Colab) if it's impractical.",
+    )
+    parser.add_argument("--fine-tune-lr", type=float, default=1e-5)
+    parser.add_argument(
+        "--fine-tune-unfreeze-layers",
+        type=int,
+        default=30,
+        help="Only unfreeze the last N layers of EfficientNetB0 (roughly its last "
+        "block) instead of the whole 237-layer backbone. With only ~2,856 training "
+        "images across 87 classes, fully unfreezing overfits/destabilizes fast.",
     )
     args = parser.parse_args()
 
@@ -105,13 +135,16 @@ def main() -> None:
             label_mode="categorical",
         )
 
-    normalization = tf.keras.layers.Rescaling(1.0 / 255)
-    train_ds = train_ds.map(lambda x, y: (normalization(x), y)).prefetch(tf.data.AUTOTUNE)
+    # No manual rescaling here: EfficientNetB0 includes its own preprocessing
+    # (a Rescaling layer) and expects raw [0, 255] float pixels as input.
+    # Normalizing to [0, 1] ourselves on top of that double-shrinks the
+    # signal and the model never learns (loss stays flat at ln(num_classes)).
+    train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
     if val_ds is not None:
         val_ds_eval = val_ds
-        val_ds = val_ds.map(lambda x, y: (normalization(x), y)).prefetch(tf.data.AUTOTUNE)
+        val_ds = val_ds.prefetch(tf.data.AUTOTUNE)
 
-    model = build_model(num_classes, freeze_base=args.freeze_base)
+    model, base_model = build_model(num_classes)
     model.summary()
 
     callbacks = [
@@ -119,12 +152,53 @@ def main() -> None:
         tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss" if val_ds else "loss", factor=0.5, patience=2),
     ]
 
+    print(f"\n=== Phase 1: frozen backbone, {args.epochs} epochs ===")
     history = model.fit(
         train_ds,
         validation_data=val_ds,
         epochs=args.epochs,
         callbacks=callbacks,
     )
+    combined_history = {k: list(v) for k, v in history.history.items()}
+
+    # Phase 1's EarlyStopping(restore_best_weights=True) already leaves
+    # `model` holding phase 1's own best-val_loss weights. Snapshot those
+    # (and the val_loss they achieved) so that if fine-tuning regresses --
+    # a real risk with ~2,856 images across 87 classes -- we can fall back
+    # to them instead of silently shipping a worse model than phase 1 alone.
+    phase1_weights = model.get_weights()
+    phase1_best_val_loss = min(history.history.get("val_loss", history.history["loss"]))
+
+    if not args.freeze_base and args.fine_tune_epochs > 0:
+        n = args.fine_tune_unfreeze_layers
+        print(f"\n=== Phase 2: fine-tuning last {n} layers, {args.fine_tune_epochs} epochs at lr={args.fine_tune_lr} ===")
+        base_model.trainable = True
+        if n > 0:
+            for layer in base_model.layers[:-n]:
+                layer.trainable = False
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=args.fine_tune_lr),
+            loss="categorical_crossentropy",
+            metrics=["accuracy"],
+        )
+        fine_tune_history = model.fit(
+            train_ds,
+            validation_data=val_ds,
+            epochs=args.fine_tune_epochs,
+            callbacks=callbacks,
+        )
+        for k, v in fine_tune_history.history.items():
+            combined_history.setdefault(k, []).extend(v)
+
+        phase2_best_val_loss = min(
+            fine_tune_history.history.get("val_loss", fine_tune_history.history["loss"])
+        )
+        if phase2_best_val_loss > phase1_best_val_loss:
+            print(
+                f"Fine-tuning did not beat phase 1 (val_loss {phase2_best_val_loss:.4f} "
+                f"vs {phase1_best_val_loss:.4f}) -- keeping phase 1's weights instead."
+            )
+            model.set_weights(phase1_weights)
 
     BACKEND_MODELS_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -143,15 +217,17 @@ def main() -> None:
         import matplotlib.pyplot as plt
 
         fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-        axes[0].plot(history.history["accuracy"], label="train")
-        if "val_accuracy" in history.history:
-            axes[0].plot(history.history["val_accuracy"], label="val")
+        axes[0].plot(combined_history["accuracy"], label="train")
+        if "val_accuracy" in combined_history:
+            axes[0].plot(combined_history["val_accuracy"], label="val")
+        if not args.freeze_base and args.fine_tune_epochs > 0:
+            axes[0].axvline(args.epochs - 1, color="gray", linestyle="--", label="fine-tune starts")
         axes[0].set_title("Accuracy")
         axes[0].legend()
 
-        axes[1].plot(history.history["loss"], label="train")
-        if "val_loss" in history.history:
-            axes[1].plot(history.history["val_loss"], label="val")
+        axes[1].plot(combined_history["loss"], label="train")
+        if "val_loss" in combined_history:
+            axes[1].plot(combined_history["val_loss"], label="val")
         axes[1].set_title("Loss")
         axes[1].legend()
 
@@ -166,7 +242,7 @@ def main() -> None:
 
         y_true, y_pred = [], []
         for batch_x, batch_y in val_ds_eval:
-            preds = model.predict(normalization(batch_x), verbose=0)
+            preds = model.predict(batch_x, verbose=0)
             y_true.extend(np.argmax(batch_y.numpy(), axis=1))
             y_pred.extend(np.argmax(preds, axis=1))
 

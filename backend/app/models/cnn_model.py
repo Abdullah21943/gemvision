@@ -61,10 +61,12 @@ class GemstoneCNN:
         return self._load_error
 
     def _preprocess(self, image_bytes: bytes) -> np.ndarray:
+        # No /255 rescaling: EfficientNetB0 has its own preprocessing baked
+        # in (see ml/train_cnn.py) and expects raw [0, 255] float pixels -
+        # must match training exactly or predictions are meaningless.
         size = settings.cnn_image_size
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB").resize((size, size))
         arr = np.asarray(img, dtype=np.float32)
-        arr = arr / 255.0
         return np.expand_dims(arr, axis=0)
 
     def predict(self, image_bytes: bytes, top_k: int = 3) -> list[tuple[str, float]]:

@@ -4,7 +4,7 @@ import 'secrets.dart';
 /// never import Secrets directly.
 class AppConfig {
   static const supabaseUrl = Secrets.supabaseUrl;
-  static const supabaseAnonKey = Secrets.supabaseAnonKey;
+  static const supabasePublishableKey = Secrets.supabasePublishableKey;
   static const apiBaseUrl = Secrets.apiBaseUrl;
 
   static const scanImagesBucket = 'scan-images';

@@ -14,6 +14,7 @@ backend/models/*.pkl
 backend/models/class_indices.json
 ml/data/*
 !ml/data/.gitkeep
+ml/*.log
 
 # Flutter
 mobile/.dart_tool/

@@ -1,0 +1,93 @@
+                   precision    recall  f1-score   support
+
+      Alexandrite       0.50      1.00      0.67         4
+        Almandine       0.67      0.50      0.57         4
+        Amazonite       1.00      0.50      0.67         4
+            Amber       1.00      0.75      0.86         4
+         Amethyst       0.33      0.50      0.40         4
+         Ametrine       0.40      0.50      0.44         4
+       Andalusite       0.33      0.50      0.40         4
+        Andradite       0.33      0.25      0.29         4
+       Aquamarine       0.00      0.00      0.00         5
+ Aventurine Green       0.50      0.60      0.55         5
+Aventurine Yellow       1.00      0.50      0.67         4
+        Benitoite       0.75      0.75      0.75         4
+     Beryl Golden       0.00      0.00      0.00         4
+          Bixbite       0.38      0.75      0.50         4
+       Bloodstone       1.00      0.50      0.67         4
+  Blue Lace Agate       0.44      0.80      0.57         5
+        Carnelian       0.80      1.00      0.89         4
+         Cats Eye       1.00      1.00      1.00         4
+       Chalcedony       0.75      0.75      0.75         4
+  Chalcedony Blue       0.33      0.25      0.29         4
+  Chrome Diopside       1.00      1.00      1.00         4
+      Chrysoberyl       0.00      0.00      0.00         4
+      Chrysocolla       1.00      0.75      0.86         4
+      Chrysoprase       0.40      1.00      0.57         4
+          Citrine       0.44      0.80      0.57         5
+            Coral       1.00      0.75      0.86         4
+        Danburite       0.17      0.25      0.20         4
+          Diamond       1.00      0.75      0.86         4
+         Diaspore       0.17      0.25      0.20         4
+     Dumortierite       0.50      0.25      0.33         4
+          Emerald       0.50      0.80      0.62         5
+         Fluorite       0.80      1.00      0.89         4
+       Garnet Red       0.33      0.75      0.46         4
+        Goshenite       0.25      0.25      0.25         4
+        Grossular       0.00      0.00      0.00         4
+        Hessonite       1.00      0.50      0.67         4
+        Hiddenite       0.75      0.75      0.75         4
+           Iolite       0.50      0.25      0.33         4
+             Jade       0.50      0.25      0.33         4
+           Jasper       0.67      0.40      0.50         5
+          Kunzite       1.00      0.50      0.67         4
+          Kyanite       1.00      0.25      0.40         4
+      Labradorite       1.00      1.00      1.00         5
+     Lapis Lazuli       1.00      0.75      0.86         4
+          Larimar       1.00      0.25      0.40         4
+        Malachite       0.75      0.75      0.75         4
+        Moonstone       0.75      0.60      0.67         5
+        Morganite       0.25      0.25      0.25         4
+       Onyx Black       1.00      0.50      0.67         4
+       Onyx Green       0.75      0.75      0.75         4
+         Onyx Red       0.50      0.25      0.33         4
+             Opal       0.71      1.00      0.83         5
+            Pearl       0.75      0.75      0.75         4
+          Peridot       0.50      0.80      0.62         5
+         Prehnite       0.80      0.80      0.80         5
+           Pyrite       0.57      0.80      0.67         5
+           Pyrope       0.50      0.50      0.50         4
+      Quartz Beer       0.43      0.75      0.55         4
+     Quartz Lemon       1.00      0.75      0.86         4
+      Quartz Rose       0.80      1.00      0.89         4
+ Quartz Rutilated       0.80      0.80      0.80         5
+     Quartz Smoky       1.00      0.50      0.67         4
+    Rhodochrosite       1.00      0.75      0.86         4
+        Rhodolite       0.00      0.00      0.00         4
+        Rhodonite       0.40      0.50      0.44         4
+             Ruby       0.43      0.75      0.55         4
+    Sapphire Blue       0.50      0.25      0.33         4
+    Sapphire Pink       0.80      1.00      0.89         4
+  Sapphire Purple       0.33      0.50      0.40         4
+  Sapphire Yellow       0.67      0.50      0.57         4
+        Scapolite       1.00      0.75      0.86         4
+       Serpentine       1.00      1.00      1.00         4
+         Sodalite       0.50      0.75      0.60         4
+      Spessartite       1.00      0.50      0.67         4
+           Sphene       0.33      0.25      0.29         4
+           Spinel       0.67      0.50      0.57         4
+        Spodumene       0.75      0.75      0.75         4
+         Sunstone       1.00      0.75      0.86         4
+        Tanzanite       0.67      0.50      0.57         4
+       Tigers Eye       0.50      1.00      0.67         5
+            Topaz       0.50      1.00      0.67         4
+       Tourmaline       0.50      0.20      0.29         5
+        Tsavorite       0.60      0.75      0.67         4
+        Turquoise       0.50      0.25      0.33         4
+        Variscite       1.00      0.50      0.67         4
+           Zircon       0.25      0.25      0.25         4
+          Zoisite       1.00      1.00      1.00         4
+
+         accuracy                           0.60       363
+        macro avg       0.64      0.59      0.58       363
+     weighted avg       0.63      0.60      0.58       363

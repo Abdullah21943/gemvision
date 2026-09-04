@@ -4,7 +4,7 @@
 // Supabase values: Supabase dashboard -> Project Settings -> API.
 class Secrets {
   static const supabaseUrl = 'https://YOUR-PROJECT.supabase.co';
-  static const supabaseAnonKey = 'YOUR-ANON-PUBLIC-KEY';
+  static const supabasePublishableKey = 'sb_publishable_...';
 
   // FastAPI backend base URL (see backend/README section in the project
   // README for how to run it).
