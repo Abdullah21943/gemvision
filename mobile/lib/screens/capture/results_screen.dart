@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
@@ -9,10 +9,16 @@ import '../price/price_form_screen.dart';
 
 /// Shows the CNN's top prediction + top-3 alternatives (Module 3 output).
 class ResultsScreen extends StatelessWidget {
-  final File imageFile;
+  final Uint8List imageBytes;
+  final String imageName;
   final PredictResult result;
 
-  const ResultsScreen({super.key, required this.imageFile, required this.result});
+  const ResultsScreen({
+    super.key,
+    required this.imageBytes,
+    required this.imageName,
+    required this.result,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +34,7 @@ class ResultsScreen extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Image.file(imageFile, height: 220, width: double.infinity, fit: BoxFit.cover),
+                child: Image.memory(imageBytes, height: 220, width: double.infinity, fit: BoxFit.cover),
               ),
               const SizedBox(height: 20),
               Card(
@@ -65,7 +71,8 @@ class ResultsScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (_) => PriceFormScreen(
                       initialGemType: top.label,
-                      imageFile: imageFile,
+                      imageBytes: imageBytes,
+                      imageName: imageName,
                       predictionConfidence: top.confidence,
                     ),
                   ),

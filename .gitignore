@@ -15,6 +15,7 @@ backend/models/class_indices.json
 ml/data/*
 !ml/data/.gitkeep
 ml/*.log
+*.log
 
 # Flutter
 mobile/.dart_tool/

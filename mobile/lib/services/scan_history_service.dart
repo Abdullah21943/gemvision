@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,13 +16,15 @@ class ScanHistoryService {
     return user.id;
   }
 
-  Future<String> uploadScanImage(File imageFile) async {
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final storagePath = '$_userId/$fileName';
+  /// Takes raw bytes (not a dart:io File) via uploadBinary so this works on
+  /// Android, iOS, and Flutter Web alike.
+  Future<String> uploadScanImage(Uint8List imageBytes, String fileName) async {
+    final ext = fileName.contains('.') ? fileName.split('.').last : 'jpg';
+    final storagePath = '$_userId/${DateTime.now().millisecondsSinceEpoch}.$ext';
 
-    await _client.storage.from(AppConfig.scanImagesBucket).upload(
+    await _client.storage.from(AppConfig.scanImagesBucket).uploadBinary(
           storagePath,
-          imageFile,
+          imageBytes,
           fileOptions: const FileOptions(upsert: false),
         );
 

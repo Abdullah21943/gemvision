@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
@@ -15,10 +15,11 @@ class GemVisionApi {
     ),
   );
 
-  Future<PredictResult> predictGemstone(File imageFile) async {
-    final fileName = imageFile.path.split(Platform.pathSeparator).last;
+  /// Takes raw bytes (not a dart:io File) so this works on Android, iOS,
+  /// and Flutter Web alike.
+  Future<PredictResult> predictGemstone(Uint8List imageBytes, String fileName) async {
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(imageFile.path, filename: fileName),
+      'file': MultipartFile.fromBytes(imageBytes, filename: fileName),
     });
 
     try {

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
@@ -18,13 +18,15 @@ const _colorOptions = ['D', 'E', 'F', 'G', 'H', 'I', 'J'];
 /// to history (Module 5) once a price estimate exists.
 class PriceFormScreen extends StatefulWidget {
   final String? initialGemType;
-  final File? imageFile;
+  final Uint8List? imageBytes;
+  final String? imageName;
   final double? predictionConfidence;
 
   const PriceFormScreen({
     super.key,
     this.initialGemType,
-    this.imageFile,
+    this.imageBytes,
+    this.imageName,
     this.predictionConfidence,
   });
 
@@ -90,7 +92,7 @@ class _PriceFormScreenState extends State<PriceFormScreen> {
   }
 
   bool get _canSaveToHistory =>
-      _estimate != null && widget.imageFile != null && widget.predictionConfidence != null;
+      _estimate != null && widget.imageBytes != null && widget.predictionConfidence != null;
 
   Future<void> _saveToHistory() async {
     if (!_canSaveToHistory) return;
@@ -100,7 +102,10 @@ class _PriceFormScreenState extends State<PriceFormScreen> {
     });
 
     try {
-      final imageUrl = await _historyService.uploadScanImage(widget.imageFile!);
+      final imageUrl = await _historyService.uploadScanImage(
+        widget.imageBytes!,
+        widget.imageName ?? 'gem.jpg',
+      );
       await _historyService.saveScan(
         ScanRecord(
           id: '',
