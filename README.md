@@ -5,8 +5,7 @@ Flutter app (Android/iOS) backed by a FastAPI ML service (CNN gemstone-type
 classifier + XGBoost price regressor) and Supabase (auth, database, storage).
 
 Built from the BSc project proposal by Abdullah Bashir (0413206), supervised
-by Callum Altham. See [docs/PROJECT_PROPOSAL.md](docs/PROJECT_PROPOSAL.md)
-for the original proposal text this implementation follows.
+by Callum Altham.
 
 ## Architecture — the six modules
 
@@ -24,8 +23,7 @@ GemVision/
 ├── backend/     FastAPI service exposing /predict and /price
 ├── ml/          Dataset download + model training scripts (produce backend/models/*)
 ├── mobile/      Flutter app (Android/iOS/web)
-├── supabase/    SQL schema (tables, RLS policies, storage bucket)
-└── docs/        Proposal reference
+└── supabase/    SQL schema (tables, RLS policies, storage bucket)
 ```
 
 The Flutter app never talks to the ML models directly — it calls the FastAPI
