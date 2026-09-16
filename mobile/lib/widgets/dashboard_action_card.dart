@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
+/// A tappable, icon+title+subtitle row card -- DashboardScreen's two
+/// primary actions ("Identify a gemstone" / "Estimate price") are built
+/// from this so the two entries stay visually identical.
 class DashboardActionCard extends StatelessWidget {
   final IconData icon;
   final String title;

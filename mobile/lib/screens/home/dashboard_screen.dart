@@ -6,6 +6,10 @@ import '../../widgets/dashboard_action_card.dart';
 import '../capture/capture_screen.dart';
 import '../price/price_form_screen.dart';
 
+/// Module 6 (Dashboard UI): the "Home" tab of HomeShell -- the two entry
+/// points into the app's core flows (identify a gemstone -> Module 2/3;
+/// estimate a price directly -> Module 4). Deliberately has no state of its
+/// own; it just reads the signed-in user's email from AppAuthState.
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 

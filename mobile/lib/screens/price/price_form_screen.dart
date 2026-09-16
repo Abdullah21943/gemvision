@@ -8,6 +8,11 @@ import '../../services/gemvision_api.dart';
 import '../../services/scan_history_service.dart';
 import '../../widgets/primary_button.dart';
 
+// Fixed option lists rather than free text: these must match the categories
+// the price model's LabelEncoders were trained on (ml/train_price_model.py)
+// -- an unrecognized value is handled server-side by falling back to the
+// most common training category, but keeping the dropdowns constrained
+// avoids relying on that fallback in normal use.
 const _cutOptions = ['Ideal', 'Premium', 'Very Good', 'Good', 'Fair'];
 const _clarityOptions = ['IF', 'VVS1', 'VVS2', 'VS1', 'VS2', 'SI1', 'SI2', 'I1'];
 const _colorOptions = ['D', 'E', 'F', 'G', 'H', 'I', 'J'];
@@ -91,6 +96,11 @@ class _PriceFormScreenState extends State<PriceFormScreen> {
     }
   }
 
+  // "Save to history" only makes sense for a scan that started from Module 3
+  // (Results screen) -- there's an image and a real CNN confidence to save
+  // alongside the price. Reached directly from the dashboard, imageBytes/
+  // predictionConfidence are null and this correctly stays false, since
+  // `scans.confidence` is NOT NULL in the schema (supabase/schema.sql).
   bool get _canSaveToHistory =>
       _estimate != null && widget.imageBytes != null && widget.predictionConfidence != null;
 

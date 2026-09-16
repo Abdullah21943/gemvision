@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Full-width ElevatedButton used for every primary action across the app
+/// (log in, sign up, analyze, get estimate, save to history, ...), so
+/// loading state (spinner + disabled tap, covered by the widget test in
+/// test/widget_test.dart) is handled consistently in one place.
 class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;

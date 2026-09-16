@@ -12,6 +12,8 @@ import 'theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Must complete before runApp(): every screen assumes Supabase.instance
+  // is ready (AuthService, ScanHistoryService construct a client eagerly).
   await Supabase.initialize(
     url: AppConfig.supabaseUrl,
     publishableKey: AppConfig.supabasePublishableKey,
@@ -20,6 +22,8 @@ Future<void> main() async {
   runApp(const GemVisionApp());
 }
 
+/// App root: wraps everything in the one piece of app-wide state
+/// (AppAuthState, the Supabase session) and hands routing to AuthGate.
 class GemVisionApp extends StatelessWidget {
   const GemVisionApp({super.key});
 

@@ -42,6 +42,8 @@ def main() -> None:
 
     for folder_name, dataset_slug in DATASETS.items():
         target_dir = DATA_DIR / folder_name
+        # Re-running this script shouldn't re-download multi-GB datasets
+        # that are already present (the third dataset alone is ~7.7GB).
         if target_dir.exists() and any(target_dir.iterdir()):
             print(f"[skip] {folder_name} already downloaded at {target_dir}")
             continue
@@ -50,6 +52,8 @@ def main() -> None:
         target_dir.mkdir(parents=True, exist_ok=True)
         api.dataset_download_files(dataset_slug, path=str(target_dir), unzip=False, quiet=False)
 
+        # Kaggle always hands back a single zip per dataset; extract then
+        # discard it so ml/data/ only holds the files training actually reads.
         for zip_path in target_dir.glob("*.zip"):
             print(f"[unzip] {zip_path.name}")
             with zipfile.ZipFile(zip_path) as zf:

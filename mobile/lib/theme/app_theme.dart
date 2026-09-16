@@ -8,6 +8,10 @@ class AppTheme {
   static const Color surface = Colors.white;
   static const Color danger = Color(0xFFB3261E);
 
+  /// The single ThemeData applied via MaterialApp(theme:) in main.dart --
+  /// every screen in the app inherits these component styles (buttons,
+  /// inputs, cards, app bars) rather than styling itself individually, so
+  /// changing the brand look is a one-file change.
   static ThemeData light() {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primary,

@@ -1,3 +1,9 @@
+// Response models for the FastAPI ML endpoints (Modules 3 & 4). Field names
+// and JSON shape mirror backend/app/schemas.py exactly (GemPrediction ->
+// GemPrediction, PredictResponse -> PredictResult, PriceResponse ->
+// PriceEstimate) -- keep both sides in sync if the API contract changes.
+
+/// One gemstone-type guess: a label plus the CNN's softmax confidence for it.
 class GemPrediction {
   final String label;
   final double confidence;
@@ -14,6 +20,8 @@ class GemPrediction {
   Map<String, dynamic> toJson() => {'label': label, 'confidence': confidence};
 }
 
+/// Full response from POST /predict: the top guess plus the top-k
+/// alternatives (shown as "Other possibilities" in ResultsScreen).
 class PredictResult {
   final GemPrediction topPrediction;
   final List<GemPrediction> topK;
@@ -30,6 +38,7 @@ class PredictResult {
   }
 }
 
+/// Response from POST /price: a point estimate plus a display range.
 class PriceEstimate {
   final double estimatedPrice;
   final double priceRangeLow;

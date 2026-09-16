@@ -15,6 +15,9 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
+  // IndexedStack (not a plain Navigator per tab) keeps all three tabs'
+  // widget state alive when switching -- e.g. History's fetched scan list
+  // isn't re-fetched every time the user taps back to it.
   static const _tabs = [DashboardScreen(), HistoryScreen(), ProfileScreen()];
 
   @override

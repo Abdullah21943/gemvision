@@ -6,6 +6,10 @@ import '../../widgets/primary_button.dart';
 import 'reset_password_screen.dart';
 import 'signup_screen.dart';
 
+/// Module 1 (Authentication): the app's initial screen when no session
+/// exists (see AuthGate in main.dart). On successful sign-in this doesn't
+/// navigate anywhere itself -- AppAuthState picks up Supabase's
+/// onAuthStateChange event and AuthGate swaps to HomeShell automatically.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 

@@ -54,6 +54,9 @@ class GemVisionApi {
     }
   }
 
+  /// Turns a raw DioException into the human-readable string screens show,
+  /// preferring the backend's own `detail` field (see HTTPException in the
+  /// FastAPI routers) over Dio's generic exception message.
   String _messageFor(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['detail'] != null) {

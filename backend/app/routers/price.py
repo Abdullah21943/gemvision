@@ -1,3 +1,10 @@
+"""Module 4: price estimation endpoint.
+
+Takes gem_type/carat/cut/clarity/color (user-supplied -- see the note on
+PriceRequest in app/schemas.py) and returns an XGBoost price estimate plus
+a display range.
+"""
+
 from fastapi import APIRouter, HTTPException
 
 from app.models.price_model import price_model

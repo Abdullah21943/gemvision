@@ -4,6 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/primary_button.dart';
 
+/// Module 1 (Authentication): email/password registration via Supabase Auth.
+/// AuthGate (main.dart) automatically routes to the signed-in HomeShell once
+/// a session exists, so this screen only needs to handle the signed-up-but-
+/// not-yet-confirmed case (response.session == null when email confirmation
+/// is required) -- everything else is left to the auth-state listener.
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 

@@ -46,6 +46,11 @@ class ScanRecord {
     );
   }
 
+  /// Shape expected by `scans` table INSERT (see supabase/schema.sql) --
+  /// deliberately omits `id`/`created_at`, which Postgres generates itself,
+  /// so callers construct a ScanRecord with a placeholder `id: ''` purely
+  /// to hold the other fields until the real row (with its real id) comes
+  /// back from a subsequent fetchHistory().
   Map<String, dynamic> toInsertJson(String userId) => {
         'user_id': userId,
         'gem_type': gemType,

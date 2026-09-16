@@ -4,6 +4,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/primary_button.dart';
 
+/// Part of Module 1 (Authentication): sends a Supabase password-reset email
+/// for the entered address. Reached from LoginScreen's "Forgot password?"
+/// link. Success/failure both show inline text rather than navigating away,
+/// since Supabase doesn't confirm whether the address actually has an
+/// account (avoids leaking which emails are registered).
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
 

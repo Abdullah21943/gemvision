@@ -5,6 +5,10 @@ import '../../services/auth_service.dart';
 import '../../state/auth_state.dart';
 import '../../widgets/primary_button.dart';
 
+/// The "Profile" tab of HomeShell. Deliberately minimal -- just identifies
+/// the signed-in user and signs out; signOut() triggers Supabase's
+/// onAuthStateChange, which AuthGate (main.dart) picks up to route back to
+/// LoginScreen without this widget navigating explicitly.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
