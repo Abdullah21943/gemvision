@@ -37,6 +37,9 @@ mobile/**/*.iml
 mobile/lib/config/secrets.dart
 supabase/.env
 
+# Internal reports/report-drafting workspace -- never goes to GitHub
+docs/
+
 # OS
 .DS_Store
 Thumbs.db
