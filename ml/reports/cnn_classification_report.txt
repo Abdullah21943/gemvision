@@ -1,3 +1,5 @@
+Overall accuracy: 0.5950
+
                    precision    recall  f1-score   support
 
       Alexandrite       0.50      1.00      0.67         4

@@ -17,6 +17,10 @@ ml/data/*
 ml/*.log
 *.log
 
+# Convenience upload bundles for Colab (just re-zip backend/models/ and
+# ml/data/gemstones-images/test/ to regenerate -- not source artifacts)
+ml/*_for_colab.zip
+
 # Flutter
 mobile/.dart_tool/
 mobile/.flutter-plugins
